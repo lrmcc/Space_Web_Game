@@ -1,8 +1,7 @@
 let keyPress = '';
-let gameInProgress = 0;
+let gameInProgress = false;
 let time = 60;
 let score = 0;
-let transformRegex = /(-*[0-9]+)/g;
 
 let shipX = 200;
 let shipY = 220;
@@ -13,9 +12,7 @@ let shipMaxY = 270;
 
 let numStarsCreate = 16;
 let numStarsActive = 0;
-let starYValue = [-100,50,200,350,500];
 
-let numUFOsCreate = 0;
 let UFOX = -180;
 let UFOMinX = -180;
 let UFOMaxX = 530;
@@ -24,43 +21,50 @@ let UFODirection = 1;
 
 let UFOResetX = [-179, -38, 104, 246, 388, 529]
 let UFOElementID = '';
-let UFOHit = 0;
+let UFOHit = false;
 
 let numberLasersCreate = 5;
 let laserX = 246;
 let laserY = 160;
 let laserMinY = -100;
-let laserMaxY = 270;
+// let laserMaxY = 270; This is the max Y value for container, may use later.
 let laserIDsActive = [];
 let laserIsMoving = 0;
 
 let shipComponentents = ['ship-nose', 'ship-body','ship-wing-left','ship-wing-right', 'ship-tail','ship-tail-fire','ship-tail-fire'];
 let UFOComponents = ['ufo-glass', 'ufo-alien','ufo-alien-eye-left','ufo-alien-eye-right', 'ufo-alien-body','ufo-top','ufo-body-upper', 'ufo-body-lower','ufo-antenna-pole','ufo-antenna-base','ufo-antenna-bead'];
 
+/**
+ * Starts the background animation by adding stars.
+ */
 function startBackgroundAnimation() {
     for(let i = 0; i < numStarsCreate; i++){
         addStar(`star${i}`);
     }
 }
 
+/**
+ * Starts the game by initializing Ship, Lasers, UFOs, clearing the score and starting the timer. 
+ */
 function startGame(){
     if (!gameInProgress){
         console.log("Starting game");
         document.getElementById('startButton').style.zIndex = 0;
         score = 0;
         setScore();
-        setShipCSSRootVariables();
-        addShip();
-        for(let i = 0; i < numberLasersCreate; i++){
-            addLaser(`laser${i}`);
-        }
+        initShipPosition();
+        initShip();
+        initLasers();
         addUFO(1);
         document.onkeydown = checkKey;
         startTimer();
     }
-    gameInProgress = 1;
+    gameInProgress = true;
 }
 
+/**
+ * Ends the game by removing 
+ */
 function quitGame(){
     console.log("quitting game");
     let graphicsContainer = document.querySelector('.graphics');
@@ -69,17 +73,23 @@ function quitGame(){
     }
     document.onkeydown = null;
     numStarsActive = 0;
-    gameInProgress = 0;
+    gameInProgress = false;
     startBackgroundAnimation();
     time = 0;
     document.getElementById('game-time-value').innerText = time;
     document.getElementById('startButton').style.zIndex = 1;
 }
 
+/**
+ * TODO: Pauses game.
+ */
 function pauseGame(){
 
 }
 
+/**
+ * Starts timer.
+ */
 async function startTimer(){
     time = 60;
     let timeElement = document.getElementById('game-time-value');
@@ -93,7 +103,10 @@ async function startTimer(){
     }
 }
 
-
+/**
+ * Adds star to graphics container.
+ * @param {*} starID 
+ */
 function addStar(starID){
     appendChildToGraphics('star', '',starID, 'graphics');
     let star = document.getElementById(starID);
@@ -103,23 +116,44 @@ function addStar(starID){
     numStarsActive++;
 }
 
+/**
+ * Sets star CSS values.
+ * @param {*} star 
+ * @param {*} starTime 
+ * @param {*} starXValue 
+ */
 function setStarStyles(star, starTime, starXValue){
     star.style.setProperty('--star-time', starTime +'s');
     star.style.setProperty("--star-translateX", starXValue + "px");
 }
 
+/**
+ * Resets star CSS values.
+ * @param {*} star 
+ */
 function resetStarStyles(star){
     let starTime = getStarTime();
     setStarStyles(star, starTime, getStarXValue());
     setTimeout(() => {resetStarStyles(star)}, Math.floor(starTime * 1000));
 }
 
+/**
+ * Determines the star speed.
+ * @returns number used to set star speed.
+ */
 let getStarTime = () => {return 10 * Math.random() + 3; }
 
+/**
+ * Determines the star X-coordinate value.
+ * @returns number used to set star X position.
+ */
 let getStarXValue = () => { return Math.random() * (880 - (-80)) + -80;}
 
-function addShip(){
-    console.log("Adding Ship");
+/**
+ * Initializes Ship by appending elements to graphics container.
+ */
+function initShip(){
+    console.log("Initializing Ship");
     appendChildToGraphics('', '', 'ship-container', 'graphics');
     appendChildToGraphics('', '', 'ship-wrapper', 'ship-container');
     appendChildToGraphics('', '', 'ship', 'ship-wrapper');
@@ -128,6 +162,9 @@ function addShip(){
     }
 }
 
+/**
+ * Allows the ship to move.
+ */
 function shipMove(){
     let shipContainer = document.getElementById('ship-container');
     shipContainer.style.transform = `translate(${shipX}px, ${shipY}px)`;
@@ -137,10 +174,22 @@ function shipMove(){
     setTimeout(shipFireOff(shipTailFire), 100);
 }
 
+/**
+ * Toggles the ships tail fire on.
+ * @param {*} shipTailFire 
+ */
 let shipFireOn = (shipTailFire) => {shipTailFire.style.visibility = "visible";}
 
+/**
+ * Toggles the ships tail fire off.
+ * @param {*} shipTailFire 
+ */
 let shipFireOff = (shipTailFire) => {shipTailFire.style.visibility = "hidden";}
 
+/**
+ * Initializes UFOs by add needed elements to graphics container.
+ * @param  {Number} numUFOs The number of UFOs to be added.
+ */
 function addUFO(numUFOs){
     for (let i = 0; i < numUFOs; i++){
         appendChildToGraphics('ufo-container', '',`ufo-container${i}`, 'graphics');
@@ -155,6 +204,10 @@ function addUFO(numUFOs){
     }
 }
 
+/**
+ * Activates the UFO animation.
+ * @param {*} UFOContainer 
+ */
  function activateUFOAnimation(UFOContainer){
     let id = setInterval(frame, 10);
     async function frame() {
@@ -163,7 +216,7 @@ function addUFO(numUFOs){
         } else if (UFOX == UFOMinX){
             UFODirection = 1;
         } else if (UFOHit){
-            UFOHit = 0;
+            UFOHit = false;
             UFOContainer.style.opacity = '0';
             score++;
             setScore();
@@ -179,8 +232,22 @@ function addUFO(numUFOs){
     }
 }
 
-let addLaser = (laserID) => { appendChildToGraphics('laser', '',laserID, 'graphics');}
- 
+/**
+ * Initializes the ships lasers.
+ * @param {*} laserID 
+ */
+let initLasers = (laserID) => { 
+    for(let i = 0; i < numberLasersCreate; i++){
+        appendChildToGraphics('laser', '',`laser${i}`, 'graphics');}
+    }
+    
+ /**
+  * Appends desired element to the graphics container.
+  * @param {*} childClassName 
+  * @param {*} childAddClassName 
+  * @param {*} childId 
+  * @param {*} parentElement 
+  */
 function appendChildToGraphics(childClassName, childAddClassName, childId, parentElement){
     let graphicsContainer = document.getElementById(parentElement);
     let childElement = document.createElement("div");
@@ -190,6 +257,10 @@ function appendChildToGraphics(childClassName, childAddClassName, childId, paren
     graphicsContainer.appendChild(childElement);
 }
 
+/**
+ * Checks the value of the key pressed.
+ * @param {*} e 
+ */
 function checkKey(e) {
     e = e || window.event;
     keyPress = e.keyCode;
@@ -216,6 +287,9 @@ function checkKey(e) {
     }
 }
 
+/**
+ * Activates the laser to fire.
+ */
 async function fireLaser(){
     let laserIDNumber = laserIDsActive.length;
     let laserID = `laser${laserIDNumber}`
@@ -227,6 +301,10 @@ async function fireLaser(){
     laserIDsActive.shift();
  }
 
+ /**
+  * Activate the laser's animation.
+  * @param {*} laser 
+  */
  function activateFireLaserAnimation(laser){
     laserX = shipX + 48;
     laserY = shipY;
@@ -245,6 +323,10 @@ async function fireLaser(){
     }
 }
 
+/**
+ * Checks for a laser hit on the UFO.
+ * @param {*} laser 
+ */
 async function checkLaserHit(laser){
     while(laserIsMoving){
         await sleep(10);
@@ -257,24 +339,48 @@ async function checkLaserHit(laser){
                 //console.log("UFOY: " + UFOY);
                 console.log("y-HIT!");
                 laserIsMoving = 0;
-                UFOHit = 1;
+                UFOHit = true;
             }
         }
     }
 };
 
-function setScore(){
+/**
+ * Sets the value of the score.
+ */
+function setScore() {
     document.getElementById('game-score-value').innerText = score;
 }
 
-function setUFOTransform(UFOContainer){
+/**
+ * Moves the UFO.
+ * @param {*} UFOContainer 
+ */
+function setUFOTransform(UFOContainer) {
     UFOContainer.style.transform = `translate(${UFOX}px, ${UFOY}px)`;
 }
-function setShipCSSRootVariables(){
-    setCSSRootVariable('--ship-translateX', shipX, 'px');
-    setCSSRootVariable('--ship-translateY', shipY, 'px');
+
+/**
+ * Initializes the Ship's position.
+ */
+function initShipPosition() {
+    setCssValue('--ship-translateX', shipX, 'px');
+    setCssValue('--ship-translateY', shipY, 'px');
 }
 
-let setCSSRootVariable = (varName, value, valueString)  => { document.documentElement.style.setProperty(`${varName}`, value + valueString);}  
+/**
+ * Sets the CSS value for a desired element.
+ * @param {*} varName 
+ * @param {*} value 
+ * @param {*} valueString 
+ */
+let setCssValue = (varName, value, valueString)  => { 
+    document.documentElement.style.setProperty(`${varName}`, value + valueString);
+}  
 
+/**
+ * Sleep function for a given amount of milliseconds.
+ * @param {*} ms 
+ * @returns 
+ */
 let sleep = (ms) => { return new Promise(resolve => setTimeout(resolve, ms));}
