@@ -46,12 +46,11 @@ function startBackgroundAnimation() {
 /**
  * Starts the game by initializing Ship, Lasers, UFOs, clearing the score and starting the timer. 
  */
-function startGame(){
+function startGame() {
     if (!gameInProgress){
         console.log("Starting game");
-        document.getElementById('startButton').style.zIndex = 0;
-        score = 0;
-        setScore();
+        document.getElementById('startButton').remove();
+        setScore(0);
         initShipPosition();
         initShip();
         initLasers();
@@ -65,7 +64,7 @@ function startGame(){
 /**
  * Ends the game by removing 
  */
-function quitGame(){
+function quitGame() {
     console.log("quitting game");
     let graphicsContainer = document.querySelector('.graphics');
     while (graphicsContainer.lastElementChild) {
@@ -77,20 +76,31 @@ function quitGame(){
     startBackgroundAnimation();
     time = 0;
     document.getElementById('game-time-value').innerText = time;
-    document.getElementById('startButton').style.zIndex = 1;
+    addStartButton();
+}
+
+/**
+ * Adds Start button
+ */
+ function addStartButton() {
+    let startButton = createElement("button", "startButton", ["start-button", "game-text"]);
+    startButton.setAttribute("type", "button");
+    startButton.setAttribute("onClick", "startGame()");
+    startButton.innerText="Start";
+    appendChildToParent(startButton, "start-button-container");
 }
 
 /**
  * TODO: Pauses game.
  */
-function pauseGame(){
+function pauseGame() {
 
 }
 
 /**
  * Starts timer.
  */
-async function startTimer(){
+async function startTimer() {
     time = 60;
     let timeElement = document.getElementById('game-time-value');
     while (time > -1){
@@ -107,8 +117,8 @@ async function startTimer(){
  * Adds star to graphics container.
  * @param {*} starID 
  */
-function addStar(starID){
-    appendChildToGraphics('star', '',starID, 'graphics');
+function addStar(starID) {
+    appendChildToParent(createElement('div', starID, ['star']), 'graphics');
     let star = document.getElementById(starID);
     let starTime = getStarTime();
     setStarStyles(star, starTime, getStarXValue());
@@ -122,7 +132,7 @@ function addStar(starID){
  * @param {*} starTime 
  * @param {*} starXValue 
  */
-function setStarStyles(star, starTime, starXValue){
+function setStarStyles(star, starTime, starXValue) {
     star.style.setProperty('--star-time', starTime +'s');
     star.style.setProperty("--star-translateX", starXValue + "px");
 }
@@ -131,7 +141,7 @@ function setStarStyles(star, starTime, starXValue){
  * Resets star CSS values.
  * @param {*} star 
  */
-function resetStarStyles(star){
+function resetStarStyles(star) {
     let starTime = getStarTime();
     setStarStyles(star, starTime, getStarXValue());
     setTimeout(() => {resetStarStyles(star)}, Math.floor(starTime * 1000));
@@ -152,20 +162,20 @@ let getStarXValue = () => { return Math.random() * (880 - (-80)) + -80;}
 /**
  * Initializes Ship by appending elements to graphics container.
  */
-function initShip(){
+function initShip() {
     console.log("Initializing Ship");
-    appendChildToGraphics('', '', 'ship-container', 'graphics');
-    appendChildToGraphics('', '', 'ship-wrapper', 'ship-container');
-    appendChildToGraphics('', '', 'ship', 'ship-wrapper');
+    appendChildToParent(createElement('div', 'ship-container', []), 'graphics');
+    appendChildToParent(createElement('div', 'ship-wrapper', []), 'ship-container');
+    appendChildToParent(createElement('div', 'ship', []), 'ship-wrapper');
     for(let i = 0; i < shipComponentents.length; i++){
-        appendChildToGraphics('', ' ship-component', shipComponentents[i], 'ship');
+        appendChildToParent(createElement('div', shipComponentents[i], ['ship-component']), 'ship');
     }
 }
 
 /**
  * Allows the ship to move.
  */
-function shipMove(){
+function shipMove() {
     let shipContainer = document.getElementById('ship-container');
     shipContainer.style.transform = `translate(${shipX}px, ${shipY}px)`;
     console.log("shipContainer.style.transform: " + shipContainer.style.transform);
@@ -190,12 +200,12 @@ let shipFireOff = (shipTailFire) => {shipTailFire.style.visibility = "hidden";}
  * Initializes UFOs by add needed elements to graphics container.
  * @param  {Number} numUFOs The number of UFOs to be added.
  */
-function addUFO(numUFOs){
+function addUFO(numUFOs) {
     for (let i = 0; i < numUFOs; i++){
-        appendChildToGraphics('ufo-container', '',`ufo-container${i}`, 'graphics');
-        appendChildToGraphics('ufo', '', `ufo${i}`, `ufo-container${i}`);
+        appendChildToParent(createElement('div', `ufo-container${i}`, ['ufo-container']), 'graphics');
+        appendChildToParent(createElement('div', `ufo${i}`, ['ufo']), `ufo-container${i}`);
         for(let j = 0; j < UFOComponents.length; j++){
-            appendChildToGraphics(UFOComponents[j], ' ufo-component', `${UFOComponents[j]}${i}`, `ufo${i}`);
+            appendChildToParent(createElement('div', `${UFOComponents[j]}${i}`, [UFOComponents[j], 'ufo-component']),`ufo${i}`);
         }
         UFOElementID = `ufo-container${i}`;
         let UFOContainer = document.getElementById(UFOElementID);
@@ -208,7 +218,7 @@ function addUFO(numUFOs){
  * Activates the UFO animation.
  * @param {*} UFOContainer 
  */
- function activateUFOAnimation(UFOContainer){
+ function activateUFOAnimation(UFOContainer) {
     let id = setInterval(frame, 10);
     async function frame() {
         if (UFOX == UFOMaxX) {
@@ -218,8 +228,7 @@ function addUFO(numUFOs){
         } else if (UFOHit){
             UFOHit = false;
             UFOContainer.style.opacity = '0';
-            score++;
-            setScore();
+            setScore(++score);
             clearInterval(id);
             await sleep(Math.floor(Math.random() * 6000));
             UFOX = UFOResetX[Math.floor(Math.random() * 6)];
@@ -238,23 +247,31 @@ function addUFO(numUFOs){
  */
 let initLasers = (laserID) => { 
     for(let i = 0; i < numberLasersCreate; i++){
-        appendChildToGraphics('laser', '',`laser${i}`, 'graphics');}
+        appendChildToParent(createElement('div', `laser${i}`, ['laser']), 'graphics');
+        }
     }
-    
- /**
-  * Appends desired element to the graphics container.
-  * @param {*} childClassName 
-  * @param {*} childAddClassName 
-  * @param {*} childId 
-  * @param {*} parentElement 
-  */
-function appendChildToGraphics(childClassName, childAddClassName, childId, parentElement){
-    let graphicsContainer = document.getElementById(parentElement);
-    let childElement = document.createElement("div");
-    childElement.className = childClassName;
-    if (childAddClassName != '') childElement.className += childAddClassName;
-    if (childId != 999) childElement.id = childId;
-    graphicsContainer.appendChild(childElement);
+
+function createElement(elemType, elemId, elemClassList) {
+    let elem = document.createElement(elemType);
+    elem.id = elemId;
+    if (elemClassList.length > 0) {
+        elemClassList.forEach(className => {
+            elem.classList.add(className);
+        });   
+    }
+    return elem;
+}
+
+/**
+ * Appends desired element to the graphics container.
+ * @param {*} childElem Element type to be create (i.e. "div" or "button")
+ * @param {*} childId Id of child element to create
+ * @param {*} childClassList List of strings of class names
+ * @param {*} parentId Id of element to append child to
+ */
+ function appendChildToParent(childElem, parentId) {
+    let parentElem = document.getElementById(parentId);
+    parentElem.appendChild(childElem);
 }
 
 /**
@@ -290,7 +307,7 @@ function checkKey(e) {
 /**
  * Activates the laser to fire.
  */
-async function fireLaser(){
+async function fireLaser() {
     let laserIDNumber = laserIDsActive.length;
     let laserID = `laser${laserIDNumber}`
     let laser = document.getElementById(laserID);
@@ -305,7 +322,7 @@ async function fireLaser(){
   * Activate the laser's animation.
   * @param {*} laser 
   */
- function activateFireLaserAnimation(laser){
+ function activateFireLaserAnimation(laser) {
     laserX = shipX + 48;
     laserY = shipY;
     laserIsMoving = 1;
@@ -327,7 +344,7 @@ async function fireLaser(){
  * Checks for a laser hit on the UFO.
  * @param {*} laser 
  */
-async function checkLaserHit(laser){
+async function checkLaserHit(laser) {
     while(laserIsMoving){
         await sleep(10);
         if(laserX > (UFOX) && laserX < (UFOX+100)){
@@ -348,7 +365,7 @@ async function checkLaserHit(laser){
 /**
  * Sets the value of the score.
  */
-function setScore() {
+function setScore(score) {
     document.getElementById('game-score-value').innerText = score;
 }
 
