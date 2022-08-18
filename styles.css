@@ -12,8 +12,8 @@
     --star-translateY-75: 350px;
     --star-translateY-100: 500px;
 
-    --ship-translateX: 0px;
-    --ship-translateY: 0px;
+    --ship-translateX: 200px;
+    --ship-translateY: 220px;
 
     --graphics-time: 4s;
   }
