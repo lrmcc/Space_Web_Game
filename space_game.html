@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="./images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap" rel="stylesheet">
     <script src="space_game.js"></script>
     <title>Space Game</title>
 </head>
+
 <body onload="startBackgroundAnimation()">
     <div class="game-container game-text">
 
@@ -20,10 +22,10 @@
         <div class="game-instructions ">
             Use the keyboard Arrows to move and spacebar to shoot
             <br><br>
-            Press p to pause the game
+            <!-- Press p to pause the game -->
         </div>  
 
-        <div class="button-container">
+        <div class="button-container" id="start-button-container">
             <button type="button" class="start-button game-text" id="startButton" onClick="startGame()">Start</button>
         </div>
         
