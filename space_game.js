@@ -4,7 +4,7 @@ const shipMaxX = 560;
 const shipInitY = 220;
 const shipMinY = -60;
 const shipMaxY = 270;
-const shipComponents = ['ship-nose', 'ship-body','ship-wing-left','ship-wing-right', 'ship-tail','ship-tail-fire','ship-tail-fire'];
+const shipComponents = ['ship-nose', 'ship-body', 'ship-star', 'ship-circle', 'ship-chevron', 'ship-wing-left','ship-wing-right', 'ship-tail','ship-tail-fire','ship-tail-fire'];
 
 const UfoMinX = -180;
 const UfoMaxX = 530;
@@ -25,6 +25,7 @@ let keyPress = '';
 let shipX = 200;
 let shipY = 220;
 let shipContainer;
+let shipTailFire;
 
 let UfoX = -180;
 let UfoY = -60;
@@ -123,19 +124,18 @@ const initShip = () => {
         appendChildToParent(createElement('div', shipComponents[i], ['ship-component']), 'ship');
     }
     shipContainer = document.getElementById('ship-container');
+    shipTailFire = document.getElementById('ship-tail-fire');
 }
 
 /**
  * Allows the ship to move.
  */
-const shipMove = () => {
-    
+const shipMove = async () => {
+    shipTailFire.style.visibility = "visible";
     shipContainer.style.transform = `translate(${shipX}px, ${shipY}px)`;
     console.log(`Ship's position: x=${shipX}, y=${shipY}`);
-
-    // let shipTailFire = document.getElementById('ship-tail-fire');
-    // shipFireOn(shipTailFire);
-    // setTimeout(shipFireOff(shipTailFire), 100);
+    await sleep(100);
+    shipTailFire.style.visibility = "hidden";
 }
 
 /**
@@ -185,9 +185,8 @@ const activateUfo = (UfoContainer) => {
  * Activates the laser to fire.
  */
 const fireLaser = async (shipX) => {
-    
     let laserX = shipX + 48;
-    let laserY = shipY;
+    let laserY = shipY - 12;
     let laser = appendChildToParent(createElement('div', `laser${numLasersActive++}`, ['laser']), 'graphics');
     laser.style.transform = `translate(${laserX}px, ${laserY}px)`;
     
@@ -345,18 +344,6 @@ const getStarTime = () => {return 10 * Math.random() + 3; }
   * @returns number used to set star X position.
   */
 const getStarXValue = () => { return Math.random() * (880 - (-80)) + -80;}
-
- /**
- * Toggles the ships tail fire on.
- * @param {*} shipTailFire 
- */
-const shipFireOn = (shipTailFire) => {shipTailFire.style.visibility = "visible";}
-
-/**
- * Toggles the ships tail fire off.
- * @param {*} shipTailFire 
- */
-const shipFireOff = (shipTailFire) => {shipTailFire.style.visibility = "hidden";}
  
 /**
  * Removes Start button

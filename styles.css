@@ -14,16 +14,10 @@
 
   --ship-translateX: 200px;
   --ship-translateY: 220px;
+  --ship-color: #158ee6;
+  --ship-color-alt: #3487c2;
 
   --graphics-time: 4s;
-
-  /* --laser-translateX: 0px;
-  --laser-translateY-0: -100px;
-  --laser-translateY-25: 0px;
-  --laser-translateY-50: 100px;
-  --laser-translateY-75: 200px;
-  --laser-translateY-100: 270px;
-  --laser-time: 4s; */
 }
 
 body {
@@ -176,7 +170,7 @@ body {
 #ship-nose {
   border-left: 50px solid transparent;
   border-right: 50px solid transparent;
-  border-bottom: 110px solid red; 
+  border-bottom: 110px solid var(--ship-color);
 }
 
 #ship-body {
@@ -184,27 +178,28 @@ body {
   top: 110px;
   width: 100px;
   height: 200px;
-  background: red;
+  background: var(--ship-color);
+  z-index: 1;
 }
 
 #ship-wing-left {
   top: 200px;
   left: -60px;
-  border-bottom: 100px solid red;
+  border-bottom: 100px solid var(--ship-color-alt);
   border-left: 100px solid transparent;
 }
 
 #ship-wing-right {
   top: 200px;
   left: 60px;
-  border-bottom: 100px solid red;
+  border-bottom: 100px solid var(--ship-color-alt);
   border-right: 100px solid transparent;
 }
 
 #ship-tail {
   top: 280px;
   left: 20px;
-  border-bottom: 50px solid red; 
+  border-bottom: 50px solid var(--ship-color-alt);
   border-left: 32px solid transparent;
   border-right: 32px solid transparent;
 }
@@ -216,6 +211,88 @@ body {
   border-right: 20px solid transparent;
   border-top: 50px solid yellow;
   visibility: hidden;
+}
+#ship-star {
+  top: 150px;
+  left: -48px;
+  display: block;
+  color: blue;
+  width: 0px;
+  height: 0px;
+  border-right: 100px solid transparent;
+  border-bottom: 70px solid blue;
+  border-left: 100px solid transparent;
+  transform: rotate(35deg) scale(0.35);
+  z-index: 2;
+}
+#ship-star:before {
+  border-bottom: 80px solid blue;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  position: absolute;
+  height: 0;
+  width: 0;
+  top: -45px;
+  left: -65px;
+  display: block;
+  content: '';
+  transform: rotate(-35deg);
+}
+#ship-star:after {
+  position: absolute;
+  display: block;
+  color: blue;
+  top: 3px;
+  left: -105px;
+  width: 0px;
+  height: 0px;
+  border-right: 100px solid transparent;
+  border-bottom: 70px solid blue;
+  border-left: 100px solid transparent;
+  transform: rotate(-70deg);
+  content: '';
+}
+#ship-circle {
+  top: 135px;
+  width: 100px;
+  height: 100px;
+  background: #a3aad4;
+  border-radius: 50%;
+  transform: scale(0.7);
+  z-index: 1;
+}
+
+#ship-chevron {
+  top: 150px;
+  left: -50px;
+  width: 100px;
+  text-align: center;
+  padding: 12px;
+  margin-bottom: 6px;
+  height: 60px;
+  width: 200px;
+  transform: rotate(180deg) scale(0.33);
+  z-index: 1;
+}
+#ship-chevron:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 51%;
+  background: red;
+  transform: skew(0deg, 6deg);
+}
+#ship-chevron:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 50%;
+  background: red;
+  transform: skew(0deg, -6deg);
 }
 
 .ufo-container {
@@ -356,7 +433,7 @@ body {
   left: 136px;
   background: red;
   border-radius: 10px / 5px;
-  /* animation: laser var(--laser-time) linear 1; */
+  z-index: 1;
 }
 
 @keyframes graphics {
@@ -374,17 +451,3 @@ body {
     75%  { opacity: 0.3; box-shadow: 0px -1px 0px 0px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-75));}
     100% { opacity: 0; box-shadow: 0px -1px 0px 0px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-100));}
 }
-
-/* @keyframes laser {
-  0%   { transform: translate(var(--laser-translateX), var(--star-translateY-0));}
-  25%  { transform: translate(var(--laser-translateX), var(--star-translateY-25));}
-  50%  { transform: translate(var(--laser-translateX), var(--star-translateY-50));}
-  75%  { transform: translate(var(--laser-translateX), var(--star-translateY-75));}
-  100% { transform: translate(var(--laser-translateX), var(--star-translateY-100));}
-} */
-
-/* 
-  graphics sizes for @media 
-  width: 800px; width: 480px; width: 640px; 
-  height: 450px; height: 270px; height: 360px;  
-*/
