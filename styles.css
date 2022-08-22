@@ -3,50 +3,63 @@
 }
 
 :root {
-    --star-time: 4s; 
-    --star-blur: rgb(200, 200, 200);
-    --star-translateX: 0px; 
-    --star-translateY-0: -100px;
-    --star-translateY-25: 50px;
-    --star-translateY-50: 200px;
-    --star-translateY-75: 350px;
-    --star-translateY-100: 500px;
+  --star-time: 4s; 
+  --star-blur: rgb(200, 200, 200);
+  --star-translateX: 0px; 
+  --star-translateY-0: -100px;
+  --star-translateY-25: 50px;
+  --star-translateY-50: 200px;
+  --star-translateY-75: 350px;
+  --star-translateY-100: 500px;
 
-    --ship-translateX: 200px;
-    --ship-translateY: 220px;
+  --ship-translateX: 200px;
+  --ship-translateY: 220px;
 
-    --graphics-time: 4s;
-  }
-body{
+  --graphics-time: 4s;
+
+  /* --laser-translateX: 0px;
+  --laser-translateY-0: -100px;
+  --laser-translateY-25: 0px;
+  --laser-translateY-50: 100px;
+  --laser-translateY-75: 200px;
+  --laser-translateY-100: 270px;
+  --laser-time: 4s; */
+}
+
+body {
     background-color: rgb(6, 44, 60);
     color: whitesmoke;
 }
+
 /* game-container houses entire game */
-.game-container{
+.game-container {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-column-gap: 10px;
     grid-template-rows: auto;
     grid-row-gap: 10px;
 }
-.game-text{
+
+.game-text {
     font-family: 'Major Mono Display', monospace;
     font-size: 20px;
 }
 
 /* game-menu houses title and options */
-.game-menu{
+.game-menu {
     grid-column: 2 / span 6;
     grid-row: 1 / span 1;
     border: solid 8px rgb(2, 57, 81);
     width: 75%;
     margin: auto;
 }
-.game-title{
+
+.game-title {
     font-size: 32px;
     text-align: center;
 }
-.game-instructions{
+
+.game-instructions {
     grid-column: 2 / span 6;
     grid-row: 3 / span 2;
 }
@@ -54,7 +67,8 @@ body{
 .button-container{
   position: relative;
 }
-.start-button{
+
+.start-button {
   color:whitesmoke;
   border-radius: 4px;
   padding: 4px 8px;
@@ -68,7 +82,8 @@ body{
   left:500px;
   z-index: 1;
 }
-.quit-button{
+
+.quit-button {
   color:whitesmoke;
   border-radius: 2px;
   padding: 4px 8px;
@@ -87,13 +102,14 @@ body{
 
 
 /* game hud houses time and score */
-.game-hud{
+.game-hud {
     grid-column: 2 / span 5;
     grid-row: 5 / span 1;
     font-size: 28px;
     text-align: center;
 }
-.borderstyle{
+
+.borderstyle {
     background-color: rgb(25, 31, 47);
     border: solid 4px rgb(25, 31, 47);
     border-radius: 4px;
@@ -101,11 +117,12 @@ body{
 
 
 /* graphics-container houses all game animations */
-.graphics-container{
+.graphics-container {
   grid-column: 2 / span 6;
   grid-row: 6 / span 8;
 }
-.graphics{
+
+.graphics {
   width: 800px; /* width: 480px; width: 640px; */
   height: 450px; /* height: 270px; height: 360px; */
   margin: 20px;
@@ -116,7 +133,8 @@ body{
   overflow: hidden;
   animation: graphics var(--graphics-time) linear 1;
 }
-.star{
+
+.star {
   padding: 2px;
   top:800;
   left:600;
@@ -131,58 +149,67 @@ body{
   transform: translate(0px,0px);
 }
 
-#ship-container{
+#ship-container {
   position: absolute;
   width: 50%;
   margin: auto;
   transform: translate(var(--ship-translateX), var(--ship-translateY));
 }
-#ship-wrapper{
+
+#ship-wrapper {
   margin: auto;
 }
-#ship{
+
+#ship {
   position: relative;
   width: 50%;
   margin: auto;
   transform: scale(0.2);
 }
-.ship-component{
+
+.ship-component {
   position: absolute;
   width: 0;
   height: 0;
 }
-#ship-nose{
+
+#ship-nose {
   border-left: 50px solid transparent;
   border-right: 50px solid transparent;
   border-bottom: 110px solid red; 
 }
-#ship-body{
+
+#ship-body {
   position: absolute;
   top: 110px;
   width: 100px;
   height: 200px;
   background: red;
 }
-#ship-wing-left{
+
+#ship-wing-left {
   top: 200px;
   left: -60px;
   border-bottom: 100px solid red;
   border-left: 100px solid transparent;
 }
-#ship-wing-right{
+
+#ship-wing-right {
   top: 200px;
   left: 60px;
   border-bottom: 100px solid red;
   border-right: 100px solid transparent;
 }
-#ship-tail{
+
+#ship-tail {
   top: 280px;
   left: 20px;
   border-bottom: 50px solid red; 
   border-left: 32px solid transparent;
   border-right: 32px solid transparent;
 }
-#ship-tail-fire{
+
+#ship-tail-fire {
   top: 330px;
   left: 32px;
   border-left: 20px solid transparent;
@@ -191,22 +218,24 @@ body{
   visibility: hidden;
 }
 
-
-.ufo-container{
+.ufo-container {
   position: absolute;
   width: 50%;
   margin: auto;
 }
-.ufo{
+
+.ufo {
   position: relative;
   width: 50%;
   margin: auto;
   transform: scale(0.2); 
 }
-.ufo-component{
+
+.ufo-component {
   position: absolute;
 }
-.ufo-glass{
+
+.ufo-glass {
   top: -14px;
   left: 80px;
   width: 220px;
@@ -216,7 +245,8 @@ body{
   z-index:10;
   opacity: 40%;
 }
-.ufo-alien{
+
+.ufo-alien {
   left:200px;
   display: block;
   width: 32px;
@@ -225,7 +255,8 @@ body{
   border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
   z-index: 9;
 }
-.ufo-alien-eye-left{
+
+.ufo-alien-eye-left {
   top:8px;
   left:206px;
   width: 0;
@@ -235,7 +266,8 @@ body{
   border-bottom: 4px solid transparent;
   z-index:9;
 }
-.ufo-alien-eye-right{
+
+.ufo-alien-eye-right {
   top:8px;
   left:218px;
   width: 0;
@@ -245,7 +277,8 @@ body{
   border-bottom: 4px solid transparent;
   z-index:9;
 }
-.ufo-alien-body{
+
+.ufo-alien-body {
   top: 45px;
   left:200px;
   border-bottom: 40px solid DarkOliveGreen;
@@ -255,7 +288,8 @@ body{
   width: 20px;
   z-index: 9;
 }
-.ufo-top{
+
+.ufo-top {
   top: 36px;
   left: 90px;
   width: 200px;
@@ -264,7 +298,8 @@ body{
   border-radius: 50%;
   z-index: 8;
 }
-.ufo-body-upper{
+
+.ufo-body-upper {
   top: 30px;
   left: 50px;
   width: 300px;
@@ -273,7 +308,8 @@ body{
   border-radius: 50%;
   z-index: 7;
 }
-.ufo-body-lower{
+
+.ufo-body-lower {
   top: 30px;
   left: 50px;
   width: 300px;
@@ -281,7 +317,8 @@ body{
   background-color: green;
   border-radius: 50%;
 }
-.ufo-antenna-pole{
+
+.ufo-antenna-pole {
   top: 20px;
   left: 300px;
   width: 0;
@@ -291,7 +328,8 @@ body{
   border-bottom: 50px solid darkgreen;
   z-index: 8;
 }
-.ufo-antenna-base{
+
+.ufo-antenna-base {
   top: 66px;
   left: 300px;
   width: 20px;
@@ -300,7 +338,8 @@ body{
   border-radius: 50%;
   z-index: 8;
 }
-.ufo-antenna-bead{
+
+.ufo-antenna-bead {
   top: 20px;
   left: 302px;
   width: 16px;
@@ -310,15 +349,14 @@ body{
   z-index: 8;
 }
 
-.laser{
+.laser {
   position: absolute;
   width: 4px;
   height: 20px;
   left: 136px;
   background: red;
   border-radius: 10px / 5px;
-  opacity: 0;
-  transform: translate(var(--ship-translateX), var(--ship-translateY));
+  /* animation: laser var(--laser-time) linear 1; */
 }
 
 @keyframes graphics {
@@ -336,6 +374,14 @@ body{
     75%  { opacity: 0.3; box-shadow: 0px -1px 0px 0px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-75));}
     100% { opacity: 0; box-shadow: 0px -1px 0px 0px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-100));}
 }
+
+/* @keyframes laser {
+  0%   { transform: translate(var(--laser-translateX), var(--star-translateY-0));}
+  25%  { transform: translate(var(--laser-translateX), var(--star-translateY-25));}
+  50%  { transform: translate(var(--laser-translateX), var(--star-translateY-50));}
+  75%  { transform: translate(var(--laser-translateX), var(--star-translateY-75));}
+  100% { transform: translate(var(--laser-translateX), var(--star-translateY-100));}
+} */
 
 /* 
   graphics sizes for @media 

@@ -12,7 +12,7 @@ const UfoResetX = [-179, -38, 104, 246, 388, 529]
 const UfoComponents = ['ufo-glass', 'ufo-alien','ufo-alien-eye-left','ufo-alien-eye-right', 'ufo-alien-body','ufo-top','ufo-body-upper', 'ufo-body-lower','ufo-antenna-pole','ufo-antenna-base','ufo-antenna-bead'];
 
 const laserMinY = -100;
-// const laserMaxY = 270; This is the max Y value for container, may use later.
+const laserMaxY = 270;
 const numLasersCreate = 5;
 
 const numStarsCreate = 16;
@@ -20,19 +20,18 @@ const numStarsCreate = 16;
 let gameInProgress = false;
 let time = 60;
 let score = 0;
-// let keyPress = '';
+let keyPress = '';
 
 let shipX = 200;
 let shipY = 220;
+let shipContainer;
 
 let UfoX = -180;
 let UfoY = -60;
 let UfoDirection = 1;
 let UfoHit = false;
 
-let laserX = 246;
-let laserY = 160;
-let laserIDsActive = [];
+let numLasersActive = 0;
 let laserIsMoving = false;
 
 let numStars = 0;
@@ -47,7 +46,7 @@ const startBackgroundAnimation = () => {
 }
 
 /**
- * Starts the game by initializing Ship, Lasers, UFOs, clearing the score and starting the timer. 
+ * Starts the game by initializing Ship, Lasers, Ufos, clearing the score and starting the timer. 
  */
 const startGame = () => {
     if (!gameInProgress){
@@ -117,49 +116,30 @@ const resetStarStyles = (star) => {
  */
 const initShip = () => {
     console.log("Initializing Ship");
-    initShipPosition();
-    initLasers();
-    
     appendChildToParent(createElement('div', 'ship-container', []), 'graphics');
     appendChildToParent(createElement('div', 'ship-wrapper', []), 'ship-container');
     appendChildToParent(createElement('div', 'ship', []), 'ship-wrapper');
     for(let i = 0; i < shipComponents.length; i++){
         appendChildToParent(createElement('div', shipComponents[i], ['ship-component']), 'ship');
     }
-}
-
-/**
- * Initializes the Ship's position.
- */
-const initShipPosition = () => {
-    setCssRootValue('--ship-translateX', shipInitX, 'px');
-    setCssRootValue('--ship-translateY', shipInitY, 'px');
-}
-
-/**
- * Initializes the ships lasers.
- * @param {*} laserID 
- */
-const initLasers = (laserID) => { 
-    for(let i = 0; i < numLasersCreate; i++){
-        appendChildToParent(createElement('div', `laser${i}`, ['laser']), 'graphics');
-    }
+    shipContainer = document.getElementById('ship-container');
 }
 
 /**
  * Allows the ship to move.
  */
 const shipMove = () => {
-    let shipContainer = document.getElementById('ship-container');
+    
     shipContainer.style.transform = `translate(${shipX}px, ${shipY}px)`;
-    console.log("shipContainer.style.transform: " + shipContainer.style.transform);
-    let shipTailFire = document.getElementById('ship-tail-fire');
-    shipFireOn(shipTailFire);
-    setTimeout(shipFireOff(shipTailFire), 100);
+    console.log(`Ship's position: x=${shipX}, y=${shipY}`);
+
+    // let shipTailFire = document.getElementById('ship-tail-fire');
+    // shipFireOn(shipTailFire);
+    // setTimeout(shipFireOff(shipTailFire), 100);
 }
 
 /**
- * Initializes UFO by add needed elements to graphics container.
+ * Initializes Ufo by add needed elements to graphics container.
  */
 const initUfo = () => {
     // Using `${i}` syntax for future implementation of multiple UFOs
@@ -174,7 +154,7 @@ const initUfo = () => {
 }
 
 /**
- * Activates the UFO animation.
+ * Activates the Ufo animation.
  * @param {*} UfoContainer 
  */
 const activateUfo = (UfoContainer) => {
@@ -185,6 +165,7 @@ const activateUfo = (UfoContainer) => {
         } else if (UfoX == UfoMinX){
             UfoDirection = 1;
         } else if (UfoHit){
+            //TODO: if Ufo hit update update global ufo x,y to offscreen 
             UfoHit = 0;
             UfoContainer.style.opacity = '0';
             setScore(++score);
@@ -203,61 +184,36 @@ const activateUfo = (UfoContainer) => {
 /**
  * Activates the laser to fire.
  */
-const fireLaser = async () => {
-    let laserIDNumber = laserIDsActive.length;
-    let laserID = `laser${laserIDNumber}`
-    let laser = document.getElementById(laserID);
-    activateFireLaser(laser);
-    checkLaserHit(laser);
-    laserIDsActive.push(laserIDNumber);
-    await sleep(2000);
-    laserIDsActive.shift();
+const fireLaser = async (shipX) => {
+    
+    let laserX = shipX + 48;
+    let laserY = shipY;
+    let laser = appendChildToParent(createElement('div', `laser${numLasersActive++}`, ['laser']), 'graphics');
+    laser.style.transform = `translate(${laserX}px, ${laserY}px)`;
+    
+    let id = setInterval(frame, 10);
+    function frame() {
+        laserY--;
+        if (laserY == laserMinY) {
+            laser.remove();
+            clearInterval(id);
+            numLasersActive--;
+        } else {
+            laser.style.transform = `translate(${laserX}px, ${laserY}px)`;
+            if (laserY < (UfoY+20) && laserY > (UfoY-50) && laserX > (UfoX) && laserX < (UfoX+100)) {
+                    UfoHit = true;
+                }
+        }
+    }
  }
 
- /**
-  * Activate the laser's animation.
-  * @param {*} laser 
-  */
-const activateFireLaser = (laser) => {
-    laserX = shipX + 48;
-    laserY = shipY;
-    laserIsMoving = true;
-    laser.style.opacity = '1';
-    let id = setInterval(frame, 5);
-    function frame() {
-        if (laserY == laserMinY) {
-            laserIsMoving = false;
-            laser.style.opacity = '0';
-            clearInterval(id);
-        } else {
-            laserY--;
-            laser.style.transform = `translate(${laserX}px, ${laserY}px)`;
-        }
-    }
-}
-
 /**
- * Checks for a laser hit on the UFO.
- * @param {*} laser 
+ * Creates an HTML element based on parameters.
+ * @param {} elemType tag type (i.e. div, span, ect.) to create
+ * @param {*} elemId id of element created
+ * @param {*} elemClassList list of classes to add to element
+ * @returns 
  */
-const checkLaserHit = async (laser) => {
-    while(laserIsMoving){
-        await sleep(10);
-        if(laserX > (UfoX) && laserX < (UfoX+100)){
-            console.log("x-HIT")
-            if(laserY < (UfoY+20) && laserY > (UfoY-50)){
-                //console.log("laserX: " + laserX);
-                //console.log("UFOX: " + UFOX);
-                //console.log("laserY: " + laserY);
-                //console.log("UFOY: " + UFOY);
-                console.log("y-HIT!");
-                laserIsMoving = false;
-                UfoHit = true;
-            }
-        }
-    }
-};
-
 const createElement = (elemType, elemId, elemClassList) => {
     let elem = document.createElement(elemType);
     elem.id = elemId;
@@ -279,6 +235,18 @@ const createElement = (elemType, elemId, elemClassList) => {
 const appendChildToParent = (childElem, parentId) => {
     let parentElem = document.getElementById(parentId);
     parentElem.appendChild(childElem);
+    return childElem;
+}
+
+ /**
+  * Tool for logging an element's actual position. Used for development/troubleshooting.
+  * @param {*} elem 
+  */
+  const logElemPosition = (elem) =>{
+    const reX = /\d+(?=,\s\d+\))/;
+    const reY = /\d+(?=\))/;
+    elemTransformVal = window.getComputedStyle(elem).getPropertyValue("transform");
+    console.log(`Elem ${elem.id}'s position: " x=${elemTransformVal.match(reX)}, y=${elemTransformVal.match(reY)}`);
 }
 
 /**
@@ -287,37 +255,27 @@ const appendChildToParent = (childElem, parentId) => {
  */
 const checkKey = (e) => {
     e = e || window.event;
-    let keyPress = e.keyCode;
+    keyPress = e.keyCode;
     console.log(keyPress);
     switch(keyPress) {
         case 37:
-            if (shipX > shipMinX) {
-                shipX = shipX - 40;
-                break;
-            }
+            if (shipX > shipMinX) {shipX -= 40;}
+            break;
         case 38:
-            if (shipY > shipMinY) {
-                shipY = shipY - 40;
-                break;
-            }
+            if (shipY > shipMinY) {shipY -= 40;}
+            break;
         case 39:
-            if (shipX < shipMaxX) {
-                shipX = shipX + 40;
-                break;
-            }
+            if (shipX < shipMaxX) {shipX += 40;}
+            break;
         case 40:
-            if (shipY < shipMaxY) {
-                shipY = shipY + 40;
-                break;
-            }
+            if (shipY < shipMaxY) {shipY += 40;}
+            break;
         default:
             if (keyPress == 32){
-                console.log("pressed spacebar");
-                if (laserIDsActive.length < 5) fireLaser();
-                else console.log("Max lasers deployed");    
+                fireLaser(shipX);
             }
     }
-    if (keyPress == 37 || keyPress == 38 ||keyPress == 39 ||keyPress == 40) {shipMove();}
+    if (keyPress >= 37 && keyPress <= 40) {shipMove();}
 }
 
 /**
@@ -362,7 +320,7 @@ const setScore = (score) => { document.getElementById('game-score-value').innerT
 const setUfoPosition = (UfoContainer) => {UfoContainer.style.transform = `translate(${UfoX}px, ${UfoY}px)`;}
 
 /**
- * Sets the CSS value for a desired element.
+ * Tool for seting a root CSS variable's value.
  * @param {*} varName 
  * @param {*} value 
  * @param {*} valueString 
