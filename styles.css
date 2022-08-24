@@ -18,6 +18,8 @@
   --ship-color-alt: #3487c2;
 
   --graphics-time: 4s;
+
+  --ufo-time: 2s;
 }
 
 body {
@@ -299,6 +301,7 @@ body {
   position: absolute;
   width: 50%;
   margin: auto;
+  animation: ufo var(--ufo-time) linear 1;
 }
 
 .ufo {
@@ -450,4 +453,18 @@ body {
     50%  { opacity: 0.6; box-shadow: 0px -2px 0px 1px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-50));}
     75%  { opacity: 0.3; box-shadow: 0px -1px 0px 0px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-75));}
     100% { opacity: 0; box-shadow: 0px -1px 0px 0px var(--star-blur); transform: translate(var(--star-translateX), var(--star-translateY-100));}
+}
+
+@keyframes ufo {
+  0%   { opacity: 0;}
+  10%  { opacity: 0.3;}
+  20%  { opacity: 0.6;}
+  30%  { opacity: 0.8;}
+  40%  { opacity: 0.3;}
+  50%  { opacity: 0.6;}
+  60%  { opacity: 0.8;}
+  70%  { opacity: 0.3;}
+  80%  { opacity: 0.6;}
+  90%  { opacity: 0.8;}
+  100% { opacity: 1;}
 }
